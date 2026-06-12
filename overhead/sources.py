@@ -1,5 +1,5 @@
-"""Aircraft data sources: local dump1090/readsb, the airplanes.live API,
-or a built-in demo simulator."""
+"""Aircraft data sources: the free airplanes.live API or a built-in
+demo simulator."""
 
 import json
 import time
@@ -11,7 +11,6 @@ USER_AGENT = "overhead-tracker/1.0"
 HTTP_TIMEOUT_S = 10
 MAX_RADIUS_NM = 250.0
 KM_PER_NM = 1.852
-DUMP1090_MAX_SEEN_POS_S = 30.0
 
 
 def _http_get_json(url):
@@ -52,30 +51,6 @@ def _normalize_one(ac):
         "type": str(ac.get("t") or ""),
         "category": str(ac.get("category") or ""),
     }
-
-
-class Dump1090Source:
-    """Reads aircraft.json from a local dump1090/readsb instance."""
-
-    name = "dump1090"
-
-    def __init__(self, url):
-        self.url = url
-
-    def fetch(self):
-        return self._normalize(_http_get_json(self.url))
-
-    @staticmethod
-    def _normalize(raw):
-        out = []
-        for ac in raw.get("aircraft", []):
-            if ac.get("lat") is None or ac.get("lon") is None:
-                continue
-            seen_pos = ac.get("seen_pos")
-            if seen_pos is not None and _to_float(seen_pos) > DUMP1090_MAX_SEEN_POS_S:
-                continue
-            out.append(_normalize_one(ac))
-        return out
 
 
 class ApiSource:

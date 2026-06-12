@@ -10,7 +10,7 @@ Environment=OVERHEAD_LAT=51.4700
 Environment=OVERHEAD_LON=-0.4543
 Environment=OVERHEAD_RADIUS_KM=60
 Environment=OVERHEAD_PORT=8000
-Environment=OVERHEAD_SOURCE=auto
+Environment=OVERHEAD_SOURCE=api
 WorkingDirectory=/opt/overhead
 ExecStart=/usr/bin/python3 /opt/overhead/run.py
 Restart=on-failure

@@ -4,7 +4,7 @@ import unittest
 
 from overhead.config import Config
 from overhead.geo import bearing_deg, haversine_km
-from overhead.sources import ApiSource, DemoSource, Dump1090Source
+from overhead.sources import ApiSource, DemoSource
 from overhead.tracker import Tracker
 
 LONDON = (51.5074, -0.1278)
@@ -35,59 +35,6 @@ class GeoTests(unittest.TestCase):
         b = bearing_deg(*LONDON, *PARIS)
         self.assertGreaterEqual(b, 0.0)
         self.assertLess(b, 360.0)
-
-
-CANNED_DUMP1090 = {
-    "now": 1700000000.0,
-    "aircraft": [
-        {  # good aircraft
-            "hex": "ABC123", "flight": "BAW123  ", "lat": 51.5, "lon": -0.4,
-            "alt_baro": 12000, "gs": 250.5, "track": 90.0, "baro_rate": -640,
-            "squawk": "7000", "category": "A3", "seen": 0.1, "seen_pos": 0.5,
-        },
-        {  # no position -> skipped
-            "hex": "def456", "flight": "EZY77", "alt_baro": 30000,
-            "seen": 1.0,
-        },
-        {  # stale position -> skipped
-            "hex": "aaa111", "flight": "RYR1", "lat": 51.0, "lon": 0.0,
-            "alt_baro": 5000, "seen": 40.0, "seen_pos": 45.0,
-        },
-        {  # on the ground -> alt_ft 0
-            "hex": "bbb222", "lat": 51.47, "lon": -0.45,
-            "alt_baro": "ground", "seen_pos": 1.0,
-        },
-    ],
-}
-
-
-class Dump1090NormalizeTests(unittest.TestCase):
-    def test_normalize(self):
-        out = Dump1090Source._normalize(CANNED_DUMP1090)
-        self.assertEqual(len(out), 2)
-        ac = out[0]
-        self.assertEqual(ac["hex"], "abc123")
-        self.assertEqual(ac["callsign"], "BAW123")
-        self.assertEqual(ac["lat"], 51.5)
-        self.assertEqual(ac["lon"], -0.4)
-        self.assertEqual(ac["alt_ft"], 12000)
-        self.assertEqual(ac["gs_kt"], 250.5)
-        self.assertEqual(ac["track_deg"], 90.0)
-        self.assertEqual(ac["vr_fpm"], -640.0)
-        self.assertEqual(ac["squawk"], "7000")
-        self.assertEqual(ac["type"], "")
-        self.assertEqual(ac["category"], "A3")
-
-    def test_normalize_ground(self):
-        out = Dump1090Source._normalize(CANNED_DUMP1090)
-        ground = out[1]
-        self.assertEqual(ground["hex"], "bbb222")
-        self.assertEqual(ground["alt_ft"], 0)
-        self.assertEqual(ground["callsign"], "")
-
-    def test_normalize_empty(self):
-        self.assertEqual(Dump1090Source._normalize({"aircraft": []}), [])
-        self.assertEqual(Dump1090Source._normalize({}), [])
 
 
 class ApiNormalizeTests(unittest.TestCase):
@@ -237,13 +184,6 @@ class TrackerTests(unittest.TestCase):
         src.name = "api"
         t = Tracker(cfg, source=src)
         self.assertGreaterEqual(t.poll_s, 5.0)
-
-    def test_dump1090_poll_not_raised(self):
-        cfg = Config(poll_s=1.0)
-        src = FakeSource()
-        src.name = "dump1090"
-        t = Tracker(cfg, source=src)
-        self.assertEqual(t.poll_s, 1.0)
 
 
 if __name__ == "__main__":
