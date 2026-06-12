@@ -1,0 +1,24 @@
+[Unit]
+Description=Overhead flight track display server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Set your station location here:
+Environment=OVERHEAD_LAT=51.4700
+Environment=OVERHEAD_LON=-0.4543
+Environment=OVERHEAD_RADIUS_KM=60
+Environment=OVERHEAD_PORT=8000
+Environment=OVERHEAD_SOURCE=auto
+WorkingDirectory=/opt/overhead
+ExecStart=/usr/bin/python3 /opt/overhead/run.py
+Restart=on-failure
+RestartSec=5
+User=pi
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
