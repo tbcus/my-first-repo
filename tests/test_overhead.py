@@ -4,7 +4,7 @@ import unittest
 
 from overhead.config import Config
 from overhead.geo import bearing_deg, haversine_km
-from overhead.sources import ApiSource, Dump1090Source
+from overhead.sources import ApiSource, DemoSource, Dump1090Source
 from overhead.tracker import Tracker
 
 LONDON = (51.5074, -0.1278)
@@ -108,6 +108,26 @@ class ApiNormalizeTests(unittest.TestCase):
     def test_radius_capped_at_250nm(self):
         src = ApiSource(51.0, 0.0, 1000.0)
         self.assertIn("/250.0", src.url)
+
+
+class DemoSourceTests(unittest.TestCase):
+    def test_fleet_normalized_and_moving(self):
+        src = DemoSource(51.47, -0.4543, 60.0, now=0.0)
+        first = src.fetch(now=0.0)
+        later = src.fetch(now=30.0)
+        self.assertEqual(len(first), 6)
+        for ac in first:
+            for key in ("hex", "callsign", "lat", "lon", "alt_ft", "gs_kt",
+                        "track_deg", "vr_fpm", "squawk", "type", "category"):
+                self.assertIn(key, ac)
+        # positions advance over time and stay near the station circle
+        moved = haversine_km(first[0]["lat"], first[0]["lon"],
+                             later[0]["lat"], later[0]["lon"])
+        self.assertGreater(moved, 1.0)
+        # flights spawn just outside the circle and fly through it
+        for ac in first:
+            self.assertLess(haversine_km(51.47, -0.4543, ac["lat"], ac["lon"]),
+                            1.3 * 60.0)
 
 
 class FakeSource:

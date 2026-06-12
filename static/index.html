@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLIGHTS OVERHEAD</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="statusbar">
+    <span id="st-station">STN --.---- --.----</span>
+    <span id="st-source">SRC ----</span>
+    <span id="st-count">0 AIRCRAFT</span>
+    <span id="st-nodata" class="hidden">NO DATA</span>
+    <span id="st-clock">--:--:-- UTC</span>
+  </div>
+
+  <main id="layout">
+    <section id="radar-pane">
+      <canvas id="radar"></canvas>
+    </section>
+
+    <aside id="sidebar">
+      <div id="featured" class="hidden">
+        <div class="featured-tag">OVERHEAD</div>
+        <div id="f-callsign">-------</div>
+        <div id="f-type">----</div>
+        <dl id="f-rows">
+          <dt>ALT</dt>      <dd id="f-alt">--</dd>
+          <dt>SPEED</dt>    <dd id="f-speed">--</dd>
+          <dt>HEADING</dt>  <dd id="f-heading">--</dd>
+          <dt>V/RATE</dt>   <dd id="f-vrate">--</dd>
+          <dt>DISTANCE</dt> <dd id="f-distance">--</dd>
+          <dt>SQUAWK</dt>   <dd id="f-squawk">--</dd>
+          <dt>HEX</dt>      <dd id="f-hex">--</dd>
+        </dl>
+      </div>
+      <div id="no-traffic">NO TRAFFIC</div>
+      <div id="others-wrap" class="hidden">
+        <div class="others-tag">NEXT</div>
+        <table id="others">
+          <tbody id="others-body"></tbody>
+        </table>
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

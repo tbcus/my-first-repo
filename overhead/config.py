@@ -22,7 +22,7 @@ class Config:
     lon: float = DEFAULT_LON
     radius_km: float = DEFAULT_RADIUS_KM
     port: int = DEFAULT_PORT
-    source: str = DEFAULT_SOURCE  # "dump1090" | "api" | "auto"
+    source: str = DEFAULT_SOURCE  # "dump1090" | "api" | "demo" | "auto"
     dump1090_url: str = DEFAULT_DUMP1090_URL
     poll_s: float = DEFAULT_POLL_S
     trail_len: int = DEFAULT_TRAIL_LEN
@@ -41,7 +41,7 @@ def _env(name, default, cast):
 def load() -> Config:
     """Build a Config from OVERHEAD_* environment variables."""
     source = _env("OVERHEAD_SOURCE", DEFAULT_SOURCE, str).strip().lower()
-    if source not in ("dump1090", "api", "auto"):
+    if source not in ("dump1090", "api", "demo", "auto"):
         source = DEFAULT_SOURCE
     return Config(
         lat=_env("OVERHEAD_LAT", DEFAULT_LAT, float),

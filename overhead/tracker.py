@@ -7,7 +7,7 @@ from collections import deque
 
 from .config import API_MIN_POLL_S
 from .geo import bearing_deg, haversine_km
-from .sources import ApiSource, Dump1090Source
+from .sources import ApiSource, DemoSource, Dump1090Source
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +34,8 @@ class Tracker:
             return Dump1090Source(config.dump1090_url)
         if config.source == "api":
             return ApiSource(config.lat, config.lon, config.radius_km)
+        if config.source == "demo":
+            return DemoSource(config.lat, config.lon, config.radius_km)
         # auto: try dump1090 once, fall back to the public API
         d = Dump1090Source(config.dump1090_url)
         try:

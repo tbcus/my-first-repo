@@ -1,0 +1,157 @@
+/* Flights Overhead -- phosphor radar projection theme */
+
+:root {
+  --green: #33ff66;
+  --green-dim: #1a8a3c;
+  --cyan: #33ffee;
+  --amber: #ffbb33;
+  --glow: 0 0 6px rgba(51, 255, 102, 0.55);
+  --glow-cyan: 0 0 8px rgba(51, 255, 238, 0.6);
+  --glow-amber: 0 0 8px rgba(255, 187, 51, 0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;            /* no scrollbars, ever */
+  background: #000;
+  color: var(--green);
+  font-family: "JetBrains Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+  user-select: none;
+}
+
+body.idle, body.idle * { cursor: none; }
+
+/* ---- status bar ---- */
+#statusbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2.4rem;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 0 1.2rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(51, 255, 102, 0.25);
+  text-shadow: var(--glow);
+  z-index: 10;
+}
+
+#st-clock { margin-left: auto; }
+
+#st-nodata {
+  color: var(--amber);
+  text-shadow: var(--glow-amber);
+  font-weight: bold;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.hidden { display: none !important; }
+
+/* ---- main layout ---- */
+#layout {
+  position: fixed;
+  top: 2.4rem; bottom: 0; left: 0; right: 0;
+  display: flex;
+}
+
+#radar-pane {
+  flex: 0 0 70%;
+  position: relative;
+}
+
+#radar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- sidebar ---- */
+#sidebar {
+  flex: 1 1 30%;
+  border-left: 1px solid rgba(51, 255, 102, 0.25);
+  padding: 1.4rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  overflow: hidden;
+  text-shadow: var(--glow);
+}
+
+#no-traffic {
+  font-size: 1.6rem;
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* featured "OVERHEAD" card */
+#featured {
+  border: 1px solid rgba(51, 255, 238, 0.4);
+  padding: 1rem 1.2rem 1.2rem;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.featured-tag, .others-tag {
+  font-size: 0.95rem;
+  letter-spacing: 0.35em;
+  opacity: 0.75;
+  margin-bottom: 0.5rem;
+}
+
+.others-tag { color: var(--green); }
+
+#f-callsign {
+  font-size: 3.2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+#f-type {
+  font-size: 1.4rem;
+  opacity: 0.8;
+  margin-bottom: 0.9rem;
+}
+
+#f-rows {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1.2rem;
+  font-size: 1.35rem;
+}
+
+#f-rows dt { opacity: 0.6; }
+#f-rows dd { text-align: right; white-space: nowrap; }
+
+/* compact list of next aircraft */
+#others {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.25rem;
+}
+
+#others td {
+  padding: 0.3rem 0.2rem;
+  border-bottom: 1px solid rgba(51, 255, 102, 0.12);
+  white-space: nowrap;
+}
+
+#others td:nth-child(2),
+#others td:nth-child(3) { text-align: right; }
+
+/* compact-height screens */
+@media (max-height: 700px) {
+  #f-callsign { font-size: 2.2rem; }
+  #f-rows { font-size: 1.05rem; }
+  #others { font-size: 1rem; }
+}

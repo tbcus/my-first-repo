@@ -24,6 +24,9 @@ Hardware shopping list and signal-chain details: **[HARDWARE.md](HARDWARE.md)**.
 # Set your location, then run — falls back to the public API automatically:
 OVERHEAD_LAT=51.4700 OVERHEAD_LON=-0.4543 python3 run.py
 # open http://localhost:8000  (click the page for fullscreen)
+
+# Completely offline? Use the built-in simulated traffic:
+OVERHEAD_SOURCE=demo python3 run.py
 ```
 
 ## With a receiver (Raspberry Pi + RTL-SDR)
@@ -40,7 +43,7 @@ OVERHEAD_LAT=<your lat> OVERHEAD_LON=<your lon> OVERHEAD_SOURCE=dump1090 python3
 | `OVERHEAD_LAT` / `OVERHEAD_LON` | 51.4700 / -0.4543 | Station (your) location — the centre of the radar. |
 | `OVERHEAD_RADIUS_KM` | 60 | Radar range; aircraft beyond this are hidden. |
 | `OVERHEAD_PORT` | 8000 | HTTP port for the display. |
-| `OVERHEAD_SOURCE` | `auto` | `dump1090`, `api`, or `auto` (try local receiver, fall back to API). |
+| `OVERHEAD_SOURCE` | `auto` | `dump1090`, `api`, `demo` (built-in simulated traffic, fully offline), or `auto` (try local receiver, fall back to API). |
 | `OVERHEAD_DUMP1090_URL` | `http://127.0.0.1:8080/data/aircraft.json` | Where the decoder publishes data. |
 | `OVERHEAD_POLL_S` | 1.0 | Poll interval (min 5 s enforced for the public API). |
 | `OVERHEAD_TRAIL_LEN` | 120 | Points kept per aircraft trail. |
