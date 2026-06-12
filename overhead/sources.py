@@ -1,4 +1,4 @@
-"""Aircraft data sources: local dump1090/readsb, the airplanes.live API,
+"""Aircraft data sources: local dump1090/readsb (RTL-SDR hardware)
 or a built-in demo simulator."""
 
 import json
@@ -9,7 +9,6 @@ from .geo import dest_point
 
 USER_AGENT = "overhead-tracker/1.0"
 HTTP_TIMEOUT_S = 10
-MAX_RADIUS_NM = 250.0
 KM_PER_NM = 1.852
 DUMP1090_MAX_SEEN_POS_S = 30.0
 
@@ -73,29 +72,6 @@ class Dump1090Source:
                 continue
             seen_pos = ac.get("seen_pos")
             if seen_pos is not None and _to_float(seen_pos) > DUMP1090_MAX_SEEN_POS_S:
-                continue
-            out.append(_normalize_one(ac))
-        return out
-
-
-class ApiSource:
-    """Reads from the free, no-key airplanes.live point API."""
-
-    name = "api"
-
-    def __init__(self, lat, lon, radius_km):
-        radius_nm = min(radius_km / KM_PER_NM, MAX_RADIUS_NM)
-        self.url = "https://api.airplanes.live/v2/point/{}/{}/{}".format(
-            lat, lon, radius_nm)
-
-    def fetch(self):
-        return self._normalize(_http_get_json(self.url))
-
-    @staticmethod
-    def _normalize(raw):
-        out = []
-        for ac in raw.get("ac", []) or []:
-            if ac.get("lat") is None or ac.get("lon") is None:
                 continue
             out.append(_normalize_one(ac))
         return out

@@ -5,9 +5,8 @@ import threading
 import time
 from collections import deque
 
-from .config import API_MIN_POLL_S
 from .geo import bearing_deg, haversine_km
-from .sources import ApiSource, DemoSource, Dump1090Source
+from .sources import DemoSource, Dump1090Source
 
 log = logging.getLogger(__name__)
 
@@ -21,8 +20,6 @@ class Tracker:
         self.config = config
         self.source = source if source is not None else self._choose_source(config)
         self.poll_s = config.poll_s
-        if getattr(self.source, "name", "") == "api":
-            self.poll_s = max(self.poll_s, API_MIN_POLL_S)
         self._lock = threading.Lock()
         self._state = {}  # hex -> aircraft record
         self._stop = threading.Event()
@@ -30,22 +27,9 @@ class Tracker:
 
     @staticmethod
     def _choose_source(config):
-        if config.source == "dump1090":
-            return Dump1090Source(config.dump1090_url)
-        if config.source == "api":
-            return ApiSource(config.lat, config.lon, config.radius_km)
         if config.source == "demo":
             return DemoSource(config.lat, config.lon, config.radius_km)
-        # auto: try dump1090 once, fall back to the public API
-        d = Dump1090Source(config.dump1090_url)
-        try:
-            d.fetch()
-            log.info("auto source: using dump1090 at %s", config.dump1090_url)
-            return d
-        except Exception as exc:
-            log.info("auto source: dump1090 unavailable (%s); "
-                     "falling back to airplanes.live API", exc)
-            return ApiSource(config.lat, config.lon, config.radius_km)
+        return Dump1090Source(config.dump1090_url)
 
     # -- lifecycle -----------------------------------------------------
 

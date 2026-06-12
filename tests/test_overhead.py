@@ -4,7 +4,7 @@ import unittest
 
 from overhead.config import Config
 from overhead.geo import bearing_deg, haversine_km
-from overhead.sources import ApiSource, DemoSource, Dump1090Source
+from overhead.sources import DemoSource, Dump1090Source
 from overhead.tracker import Tracker
 
 LONDON = (51.5074, -0.1278)
@@ -88,26 +88,6 @@ class Dump1090NormalizeTests(unittest.TestCase):
     def test_normalize_empty(self):
         self.assertEqual(Dump1090Source._normalize({"aircraft": []}), [])
         self.assertEqual(Dump1090Source._normalize({}), [])
-
-
-class ApiNormalizeTests(unittest.TestCase):
-    def test_normalize_with_type(self):
-        raw = {"ac": [{"hex": "c0ffee", "flight": "DLH9 ", "lat": 50.0,
-                       "lon": 8.0, "alt_baro": "ground", "gs": 5,
-                       "t": "A320", "category": "A3", "squawk": "1000"}]}
-        out = ApiSource._normalize(raw)
-        self.assertEqual(len(out), 1)
-        self.assertEqual(out[0]["type"], "A320")
-        self.assertEqual(out[0]["alt_ft"], 0)
-        self.assertEqual(out[0]["callsign"], "DLH9")
-
-    def test_normalize_skips_no_position(self):
-        raw = {"ac": [{"hex": "c0ffee", "alt_baro": 1000}]}
-        self.assertEqual(ApiSource._normalize(raw), [])
-
-    def test_radius_capped_at_250nm(self):
-        src = ApiSource(51.0, 0.0, 1000.0)
-        self.assertIn("/250.0", src.url)
 
 
 class DemoSourceTests(unittest.TestCase):
@@ -231,14 +211,7 @@ class TrackerTests(unittest.TestCase):
         # last good state retained
         self.assertEqual(len(self.tracker.snapshot()["aircraft"]), 1)
 
-    def test_api_min_poll_enforced(self):
-        cfg = Config(poll_s=1.0, source="api")
-        src = FakeSource()
-        src.name = "api"
-        t = Tracker(cfg, source=src)
-        self.assertGreaterEqual(t.poll_s, 5.0)
-
-    def test_dump1090_poll_not_raised(self):
+    def test_poll_interval_from_config(self):
         cfg = Config(poll_s=1.0)
         src = FakeSource()
         src.name = "dump1090"
